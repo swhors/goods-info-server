@@ -1,10 +1,9 @@
 import sqlite3
-from app.lib.sqlite.goods import Goods
-from app.lib.sqlite import _db_name_ as db_name
+from app.model.goods import Goods
+from app.model import _db_name_ as db_name
 
 
 class GoodsModel:
-
     def __init__(self):
         print("create mydata_goods")
         self.conn = sqlite3.connect(db_name, check_same_thread=False)
@@ -52,6 +51,11 @@ class GoodsModel:
               f"          {Goods._col_mall_name_}={mall_name};"
         cur = self.conn.cursor()
         cur.execute(sql)
+        cur.close()
+
+    def deleteAll(self):
+        cur = self.conn.cursor()
+        cur.execute(f'delete all from {Goods._table_name_};')
         cur.close()
 
     def insertGoods(self, name: str, goods_id: int,

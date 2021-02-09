@@ -5,10 +5,10 @@ from flask import current_app as app
 from flask import jsonify
 import json
 
-from app.lib.sqlite.category import Category
-from app.lib.sqlite.category_model import CategoryModel
-from app.lib.sqlite.goods import Goods
-from app.lib.sqlite.goods_model import GoodsModel
+from app.model.category import Category
+from app.model.category_model import CategoryModel
+from app.model.goods import Goods
+from app.model.goods_model import GoodsModel
 
 category_model = CategoryModel()
 goods_model = GoodsModel()
