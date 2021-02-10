@@ -52,32 +52,62 @@ class SqLite:
         cur.close()
 
 
+    def make_wheres(self, wheres:[]) -> str:
+        delete_where =""
+        if wheres != None and len(wheres) == 1:
+            delete_where += "where "
+            for where in wheres:
+                if 'str' in str(type(where.val())):
+                    delete_where +=\
+                        f'{where.key()}=\'{where.val()}\''
+                else:
+                    delete_where +=\
+                        f'{where.key()}={where.val()}'
+                if where.where_con_type() != WhereConType.NONE:
+                    delete_where += f' {where.where_con_type().name} '
+                else:
+                    delete_where += ' '
+        return delete_where
+
+
+    def make_keyval(self, keyval:[], update_key: bool=True) -> str:
+        set_strs = []
+        set_keys = keyval.keys()
+        operands = ['+','-','*','/']
+        for key in set_keys:
+            if 'str' in str(type(keyval[key])):
+                if update_key == True:
+                    operand = [ope for ope in operands if (ope in keyval[key])]
+                    if len(operand) > 0:
+                        set_strs.append(f'{key}={keyval[key]}')
+                    else:
+                        set_strs.append(f'{key}=\'{keyval[key]}\'')
+                else:
+                    set_strs.append(f'\'{keyval[key]}\'')
+            else:
+                if update_key == True:
+                    set_strs.append(f'{key}=\'{keyval[key]}\'')
+                else:
+                    set_strs.append(f'{keyval[key]}')
+        if len(set_keys) == 0:
+            return ""
+
+        return ', '.join(set_strs)
+
+
     def select(self,
                cols: [],
                table_name: str,
                wheres: [],
                orderby: str,
-               limit_num: int):
+               limit_num: int,
+               conv_callback = None) -> []:
         if cols == None or len(cols) == 0:
             select_cols = "*"
         else:
             select_cols = (',').join(cols)
 
-        select_where = ""
-
-        if wheres != None and len(wheres) == 1:
-            select_where += "where "
-            for where in wheres:
-                if 'str' in str(type(where.val())):
-                    select_where +=\
-                        f'{where.key()}=\'{where.val()}\''
-                else:
-                    select_where +=\
-                        f'{where.key()}={where.val()}'
-                # if where.where_con_type() == WhereConType.None:
-                #     select_where += ' '
-                # else:
-                #     select_where += f' {where.where_con_type().name}'
+        select_where = self.make_wheres(wheres)
 
         limit_num_str = ""
         if limit_num > 0:
@@ -96,7 +126,15 @@ class SqLite:
 
         cursor.close()
 
-        return datas
+        return_list = []
+
+        if conv_callback != None:
+            for data in datas:
+                obj = conv_callback(data)
+                if obj != None:
+                    return_list.append(obj)
+
+        return len(datas), return_list
 
 
     def insert(self, table_name: str, keyval:{}):
@@ -105,38 +143,23 @@ class SqLite:
 
         table_cols = ", ".join(keys)
 
-        table_vals_list = []
-        for key in keys:
-            if type(keyval[key]) == 'int':
-                table_vals_list.append(f'{keyval[key]}')
-            else:
-                table_vals_list.append(f'\'{keyval[key]}\'')
-        table_vals = ', '.join(table_vals_list)
+        table_vals = self.make_keyval(keyval, False)
 
         sql = f'insert into {table_name}({table_cols}) values({table_vals});'
+        print(f'query={sql}')
 
         cursor = self._conn_.cursor()
         cursor.execute(sql)
         cursor.close()
         self._conn_.commit()
 
+
     def delete(self, table_name: str, wheres: []):
-        delete_where =""
-        if wheres != None and len(wheres) == 1:
-            delete_where += "where "
-            for where in wheres:
-                if type(where.val()) == 'str':
-                    delete_where +=\
-                        f'{where.key()}=\'{where.val()}\''
-                else:
-                    delete_where +=\
-                        f'{where.key()}={where.val()}'
-                if where.where_con_type() != WhereConType.NONE:
-                    delete_where += f' {where.where_con_type().name} '
-                else:
-                    delete_where += ' '
+
+        delete_where = self.make_wheres(wheres)
 
         sql = f'delete from {table_name} {delete_where};'
+        print(f'query={sql}')
 
         cursor = self._conn_.cursor()
         cursor.execute(sql)
@@ -146,8 +169,25 @@ class SqLite:
 
 
     def deleteAll(self, table_name: str):
+
         self.delete(self, table_name=table_name, wheres=None)
 
+
     def selectAll(self, table_name: str, orderby: str, limit_num: int):
+
         return self.select(self, cols=None, table_name=table_name, \
                            wheres=None, orderby=orderby, limit_num=limit_num)
+
+
+    def update(self, table_name: str,  keyval: {}, wheres: []):
+        update_where = self.make_wheres(wheres)
+        update_keyval = self.make_keyval(keyval)
+        if len(update_keyval) > 0 and len(update_where) > 0:
+            sql = f'update {table_name} set {update_keyval}' +\
+                  f'    {update_where};'
+            print(f'query={sql}')
+
+            cursor = self._conn_.cursor()
+            cursor.execute(sql)
+            cursor.close()
+            self._conn_.commit()

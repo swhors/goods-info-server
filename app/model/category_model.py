@@ -33,76 +33,37 @@ class CategoryModel(SqLite):
     """
     def incCategoryCount(self, title: str):
 
-        """
-        def insert(self, table_name: str, keyval:{}):
-
-        def select(self,
-                   cols: [],
-                   table_name: str,
-                   wheres: [],
-                   orderby: str,
-                   limit_num: int):
-        """
-
-        rows = super().select(None,
+        rowsCnt, rows = super().select(None,
             Category._table_name_,
             [WheresData(Category._col_title_,title, WhereConType.NONE)],
             "", 0)
-        if len(rows) <= 0:
+        if rowsCnt <= 0:
             super().insert(Category._table_name_,
                 {Category._col_title_:title})
         else:
-            pass
+            super().update(Category._table_name_,
+               {Category._col_cnt_:f'{Category._col_cnt_}+1'},
+               [WheresData(Category._col_title_,title, WhereConType.NONE)])
+
+    @classmethod
+    def rowToCategoryAll(self, items:[]) -> Category:
+        if len(items) == 3:
+            return Category(items[0],items[1], items[2])
+        return None
 
 
-    def incCategoryCount1(self, title: str):
-        sql1 =f"select * from {Category._table_name_} \n" + \
-              f"    where title=\'{title}\';"
-        sql2 =f"update {Category._table_name_} \n" +\
-              f"    set {Category._col_cnt_}={Category._col_cnt_} + 1 \n" +\
-              f"    where {Category._col_title_} = \'{title}\'"
-        sql3 =f"insert into {Category._table_name_}({Category._col_title_})\n"+\
-              f"    values(\'{title}\');"
+    """
+    sql =f"select * from {Category._table_name_}\n" + \
+         f"    order by {Category._col_cnt_} desc limit 10;"
 
-        cur = self.conn.cursor()
-        cur.execute(sql1)
-        rows = cur.fetchall()
-        if len(rows) > 0:
-            cur.execute(sql2)
-        else:
-            cur.execute(sql3)
-        self.conn.commit()
-        cur.close()
-
-
+    """
     def getCategories(self):
-        categories = []
-        sql =f"select * from {Category._table_name_}\n" + \
-             f"    order by {Category._col_cnt_} desc limit 10;"
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        rows = cur.fetchall()
-        for row in rows:
-            if len(row) == 3:
-                categories.append(Category(row[0],row[1], row[2]))
-        cur.close()
+        rowsCnt, categories = super().select(None,
+            Category._table_name_, None,
+            f'order by {Category._col_cnt_} desc', 10,
+            CategoryModel.rowToCategoryAll)
         return categories
 
-
-    def insertCategory(self, title: str):
-        sql1 =f"select * from {Category._table_name_} \n" + \
-              f"    where {Category._col_title_}=\'{title}\';"
-
-        sql2 =f"insert into {Category._table_name_}(\n" + \
-              f"            {Category._col_title_})\n" + \
-              f"    values(\'{title}\');"
-        cur = self.conn.cursor()
-        cur.execute(sql1)
-        rows = cur.fetchall()
-        if len(rows) <= 0:
-            cur.execute(sql2)
-            self.conn.commit()
-        cur.close()
 
 if __name__=="__main__":
     category = CategoryModel()
