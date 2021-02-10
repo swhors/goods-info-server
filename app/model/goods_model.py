@@ -1,48 +1,42 @@
 import sqlite3
 from app.model.goods import Goods
 from app.model import _db_name_ as db_name
+from app.model.sqlite.sqlite import SqLite, WhereConType, WheresData
+from multipledispatch import dispatch
+from multimethods import multimethod
 
 
-class GoodsModel:
+class GoodsModel(SqLite):
     def __init__(self):
-        print("create mydata_goods")
-        self.conn = sqlite3.connect(db_name, check_same_thread=False)
-        cur = self.conn.cursor() # 2. 커서 생성 (트럭, 연결로프)
-        cur.execute(Goods.create_table())
-        cur.close()
+        print("create GoodsModel")
+        super(GoodsModel, self).__init__(Goods._table_name_,Goods.create_table())
+
 
     def __del__(self):
-        print("delete mydata_goods")
-        self.conn.close()
+        super(GoodsModel, self).__del__()
+        print("delete GoodsModel")
 
-    def incCategoryCount(self, title: str):
-        sql1 =f"select * from {Goods._table_name_} where title=\'{title}\';"
-        sql2 =f"update {Goods._table_name_} set cnt=cnt + 1 \n" +\
-              f"    where title= \'{title}\'"
-        sql3 =f"insert into {Goods._table_name_}(title, cnt)\n" +\
-              f"    values(\'{title}\',1);"
 
-        cur = self.conn.cursor()
-        cur.execute(sql1)
-        rows = cur.fetchall()
-        if len(rows) > 0:
-            cur.execute(sql2)
-        else:
-            cur.execute(sql3)
-        self.conn.commit()
-        cur.close()
+    @classmethod
+    def rowToGoodsAll(self, items:[]) -> Goods:
+        if len(items) == 9:
+            return Goods(items[0],items[1], items[2],
+                        items[3],items[4], items[5],
+                        items[6],items[7], items[8],
+                        )
+        return None
 
-    def getGoods(self):
+
+    def getGoods(self, name: str = None, goods_is: int = 0):
         categories = []
-        sql =f"select * from {Goods._table_name_} order by cnt desc;"
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        rows = cur.fetchall()
-        for row in rows:
-            if len(row) == 3:
-                categories.append(Category(row[0],row[1], row[2]))
-        cur.close()
+        if name == None:
+            cnt, categories = super().selectAll(
+                f'order by cnt desc', 100,
+                GoodsModel.rowToGoodsAll)
+        else:
+            pass
         return categories
+
 
     def deleteGoods(self, name: str, goods_id: int, mall_name: str):
         sql = f"delete from {Goods._table_name_} \n" +\
@@ -53,42 +47,113 @@ class GoodsModel:
         cur.execute(sql)
         cur.close()
 
+
     def deleteAll(self):
-        cur = self.conn.cursor()
-        cur.execute(f'delete all from {Goods._table_name_};')
-        cur.close()
+        super().deleteAll()
+
+
+    def insertGoodsClass(self, goods: Goods):
+        self.insertGoods(name = goods.name,\
+                        goods_id = goods.goods_id,\
+                        goods_url = goods.goods_url,\
+                        image_url = goods.image_url,\
+                        mall_name = goods.mall_name,\
+                        lprice = goods.lprice,\
+                        hprice = goods.hprice,\
+                        updated = goods.updated)
 
     def insertGoods(self, name: str, goods_id: int,
                     goods_url: str, image_url: str,
                     mall_name: str, lprice: int,
                     hprice: int, updated: int):
-        sql1 =f"select * from {Goods._table_name_} \n" +\
-              f"    where {Goods._col_goods_id_}={goods_id};"
-        sql2 =f"insert into {Goods._table_name_} \n" +\
-              f"    values(\'{name}\',\n" +\
-              f"           {goods_id},\n" +\
-              f"           \'{goods_url}\',\n" +\
-              f"           \'{image_url}\',\n" +\
-              f"           \'{mall_name}\',\n" +\
-              f"           {lprice},\n" +\
-              f"           {hprice},\n" +\
-              f"           {updated});"
-        cur = self.conn.cursor()
-        cur.execute(sql1)
-        rows = cur.fetchall()
-        if len(rows) <= 0:
-            cur.execute(sql2)
-            self.conn.commit()
-        cur.close()
+        wheres = [WheresData(Goods._col_name_,title, WhereConType.AND),\
+                  WheresData(Goods._col_goods_id_,goods_id, WhereConType.NONE)]
+
+        allcolums = {
+            Goods._col_name_:name,
+            Goods._col_goods_id_:goods_id,
+            Goods._col_goods_url_:goods_url,
+            Goods._col_image_url_:image_url,
+            Goods._col_mall_name_:mall_name,
+            Goods._col_lprice_:lprice,
+            Goods._col_hprice_:hprice,
+            Goods._col_updated_:updated
+        }
+
+        updateColumns = {
+            Goods._col_lprice_:lprice,
+            Goods._col_hprice_:hprice,
+            Goods._col_updated_:updated
+        }
+
+        rowsCnt, rows = super().select(None, wheres, "", 0)
+
+        print(f'insertGoods = {rowsCnt}, {rows}')
+
+        if rowsCnt <= 0:
+            super().insert(keyval=allcolums)
+        else:
+            super().update(keyval = updateColumns, wheres = wheres)
+
+
+@dispatch(GoodsModel, Goods)
+def insertGoods(self, goods: Goods):
+    self.insertGoods(name = goods.name,\
+                     goods_id = goods.goods_id,\
+                     goods_url = goods.goods_url,\
+                     image_url = goods.image_url,\
+                     mall_name = goods.mall_name,\
+                     lprice = goods.lprice,\
+                     hprice = goods.hprice,\
+                     updated = goods.updated)
+
+
+
+user_guide = [\
+        "Type goods name to test this ( to exit type exit): ",\
+        "Type goods_id(integer) to test this ( to exit type exit): ",\
+        "Type goods_url to test this ( to exit type exit): ",\
+        "Type image_url to test this ( to exit type exit): ",\
+        "Type mall_name to test this ( to exit type exit): ",\
+        "Type lprice(integer) to test this ( to exit type exit): ",\
+        "Type hprice(integer) to test this ( to exit type exit): ",\
+        "Type updated(integer) to test this ( to exit type exit): "\
+    ]
+
+
+def get_insert_item() -> Goods:
+    input_vals = []
+    cnt = 0
+    user_input = input(user_guide[cnt])
+    while user_input != 'exit':
+        input_vals.append(user_input)
+        cnt += 1
+        if cnt == 8:
+            break
+        else:
+            print(f'cnt={cnt}')
+            user_input = input(user_guide[cnt])
+
+    if len(input_vals) == 8:
+        return Goods(\
+            name = input_vals[0], goods_id = int(input_vals[1]),\
+            goods_url = input_vals[2], image_url = input_vals[3],\
+            mall_name = input_vals[4], lprice = int(input_vals[5]),\
+            hprice = int(input_vals[6]), updated = int(input_vals[7])
+        )
+    return None
+
 
 if __name__=="__main__":
     goods = GoodsModel()
-    title: str = input("Type something to test this ( to exit type exit): ")
+    user_guide0 = "Type enter or anything to input goods info " + \
+                  "( to exit type exit): "
+    title: str = input(user_guide0)
     while title != 'exit':
-        goods.incCategoryCount(title)
-        goods.incCategoryCount(title)
-        goods.incCategoryCount(title)
-        goods = category.getCategories()
-        for ca in categories:
-            print(ca)
-        title: str = input("Type something to test this ( to exit type exit): ")
+        item = get_insert_item()
+        if item != None:
+            print(f'Goods = {item}')
+            goods.insertGoodsClass(goods = item)
+        else:
+            print('Illegal goods info.')
+        title = input(user_guide0)

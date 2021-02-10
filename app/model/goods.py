@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from collections import namedtuple
 from json import JSONEncoder
+from multipledispatch import dispatch
+
 
 class Goods:
     _col_id_='id'
@@ -14,8 +16,8 @@ class Goods:
     _col_hprice_='hprice'
     _col_updated_='updated'
     _col_created_='created'
-
     _table_name_='goods'
+
 
     @classmethod
     def create_table(cls) -> str:
@@ -32,11 +34,10 @@ class Goods:
             f'    {cls._col_created_} datetime default current_timestamp);'
 
 
-    def __init__(self, id: int, name: str, goods_id: int,
+    def __init__(self, name: str, goods_id: int,
                  goods_url: str, image_url: str, mall_name: str,
-                 lprice: int, hprice: int, updated: datetime,
-                 created: datetime ):
-        self.id = id
+                 lprice: int, hprice: int, updated: int):
+        self.id = 0
         self.name = name
         self.goods_id = goods_id
         self.goods_url = goods_url
@@ -45,7 +46,8 @@ class Goods:
         self.lprice = lprice
         self.hprice = hprice
         self.updated = updated
-        self.created = created
+        self.created = 0
+
 
     def __del__(self):
         pass

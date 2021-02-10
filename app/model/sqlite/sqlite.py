@@ -31,6 +31,7 @@ class SqLite:
 
     def __init__(self, table_name: str, create_query: str):
         print("create SqLite")
+        self._table_name_ = table_name
         self._conn_ = sqlite3.connect(db_name, check_same_thread=False)
         cur = self._conn_.cursor() # 2. 커서 생성 (트럭, 연결로프)
         cur.execute(create_query)
@@ -40,17 +41,6 @@ class SqLite:
     def __del__(self):
         print("delete SqLite")
         self._conn_.close()
-
-        cur = self.conn.cursor()
-        cur.execute(sql1)
-        rows = cur.fetchall()
-        if len(rows) > 0:
-            cur.execute(sql2)
-        else:
-            cur.execute(sql3)
-        self.conn.commit()
-        cur.close()
-
 
     def make_wheres(self, wheres:[]) -> str:
         delete_where =""
@@ -97,11 +87,11 @@ class SqLite:
 
     def select(self,
                cols: [],
-               table_name: str,
                wheres: [],
                orderby: str,
                limit_num: int,
                conv_callback = None) -> []:
+
         if cols == None or len(cols) == 0:
             select_cols = "*"
         else:
@@ -113,7 +103,7 @@ class SqLite:
         if limit_num > 0:
             limit_num_str = f'limit {limit_num}'
 
-        sql = f'select {select_cols} from {table_name}' + \
+        sql = f'select {select_cols} from {self._table_name_}' + \
               f' {select_where} {orderby} {limit_num_str};'
 
         print(f'query={sql}')
@@ -124,8 +114,6 @@ class SqLite:
 
         datas = cursor.fetchall()
 
-        cursor.close()
-
         return_list = []
 
         if conv_callback != None:
@@ -134,10 +122,12 @@ class SqLite:
                 if obj != None:
                     return_list.append(obj)
 
-        return len(datas), return_list
+        cursor.close()
+
+        return len(return_list), return_list
 
 
-    def insert(self, table_name: str, keyval:{}):
+    def insert(self, keyval:{}):
 
         keys = keyval.keys()
 
@@ -145,7 +135,7 @@ class SqLite:
 
         table_vals = self.make_keyval(keyval, False)
 
-        sql = f'insert into {table_name}({table_cols}) values({table_vals});'
+        sql = f'insert into {self._table_name_}({table_cols}) values({table_vals});'
         print(f'query={sql}')
 
         cursor = self._conn_.cursor()
@@ -154,11 +144,11 @@ class SqLite:
         self._conn_.commit()
 
 
-    def delete(self, table_name: str, wheres: []):
+    def delete(self, wheres: []):
 
         delete_where = self.make_wheres(wheres)
 
-        sql = f'delete from {table_name} {delete_where};'
+        sql = f'delete from {self._table_name_} {delete_where};'
         print(f'query={sql}')
 
         cursor = self._conn_.cursor()
@@ -168,22 +158,29 @@ class SqLite:
         self._conn_.commit()
 
 
-    def deleteAll(self, table_name: str):
+    def deleteAll(self):
 
-        self.delete(self, table_name=table_name, wheres=None)
-
-
-    def selectAll(self, table_name: str, orderby: str, limit_num: int):
-
-        return self.select(self, cols=None, table_name=table_name, \
-                           wheres=None, orderby=orderby, limit_num=limit_num)
+        self.delete(self, wheres=None)
 
 
-    def update(self, table_name: str,  keyval: {}, wheres: []):
+    def selectAll(self,
+                  orderby: str,
+                  limit_num: int,
+                  conv_callback = None):
+
+        return self.select(\
+            cols=[], \
+            wheres=None,\
+            orderby=orderby,\
+            limit_num=limit_num,\
+            conv_callback=conv_callback)
+
+
+    def update(self, keyval: {}, wheres: []):
         update_where = self.make_wheres(wheres)
         update_keyval = self.make_keyval(keyval)
         if len(update_keyval) > 0 and len(update_where) > 0:
-            sql = f'update {table_name} set {update_keyval}' +\
+            sql = f'update {self._table_name_} set {update_keyval}' +\
                   f'    {update_where};'
             print(f'query={sql}')
 

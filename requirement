@@ -5,3 +5,5 @@ redis
 datetime
 collections
 json
+multipledispatch
+multimethods
