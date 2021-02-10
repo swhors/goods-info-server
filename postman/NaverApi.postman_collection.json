@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "5371d41a-4e6c-46d5-a479-88203e215552",
+		"name": "NaverApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "NaverApi",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true,
+					"user-agent": true,
+					"accept-encoding": true,
+					"accept": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Naver-Client-Id",
+						"value": "YSjvtxikTxBBK1CuVKp2",
+						"type": "text"
+					},
+					{
+						"key": "X-Naver-Client-Secret",
+						"value": "8GyfGz2jpb",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"startDate\":\"2017-01-01\",\r\n    \"endDate\":\"2017-04-30\",\r\n    \"timeUnit\":\"month\",\r\n    \"keywordGroups\":[\r\n        {\r\n            \"groupName\":\"한글\",\r\n            \"keywords\":[\"한글\",\"korean\"]\r\n        },\r\n        {\r\n            \"groupName\":\"영어\",\r\n            \"keywords\":[\"영어\",\"english\"]\r\n        }\r\n    ],\r\n    \"device\":\"pc\",\r\n    \"ages\":[\"1\",\"2\"],\r\n    \"gender\":\"f\"\r\n}"
+				},
+				"url": "https://openapi.naver.com/v1/datalab/search"
+			},
+			"response": []
+		},
+		{
+			"name": "NaverApi",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true,
+					"user-agent": true,
+					"accept-encoding": true,
+					"accept": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Naver-Client-Id",
+						"value": "YSjvtxikTxBBK1CuVKp2",
+						"type": "text"
+					},
+					{
+						"key": "X-Naver-Client-Secret",
+						"value": "8GyfGz2jpb",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"startDate\":\"2017-01-01\",\r\n    \"endDate\":\"2017-04-30\",\r\n    \"timeUnit\":\"month\",\r\n    \"keywordGroups\":[\r\n        {\r\n            \"groupName\":\"한글\",\r\n            \"keywords\":[\"한글\",\"korean\"]\r\n        },\r\n        {\r\n            \"groupName\":\"영어\",\r\n            \"keywords\":[\"영어\",\"english\"]\r\n        }\r\n    ],\r\n    \"device\":\"pc\",\r\n    \"ages\":[\"1\",\"2\"],\r\n    \"gender\":\"f\"\r\n}"
+				},
+				"url": "https://openapi.naver.com/v1/datalab/search"
+			},
+			"response": []
+		},
+		{
+			"name": "redis_test",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:5000/predict1"
+			},
+			"response": []
+		},
+		{
+			"name": "get_categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://192.168.4.205:5000/goods/get_categories"
+			},
+			"response": []
+		},
+		{
+			"name": "inc_category_count",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "http://192.168.4.205:5000/goods/inc_category_count/notebook"
+			},
+			"response": []
+		},
+		{
+			"name": "insert_item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"bus\",\r\n    \"goods_id\":1,\r\n    \"goods_url\":\"https://naver.com/goods/1\",\r\n    \"image_url\":\"https://naver.com/goods/image/1.jpg\",\r\n    \"mall_name\":\"test mall\",\r\n    \"lprice\":100,\r\n    \"hprice\":200,\r\n    \"updated\":2020203131313\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://192.168.4.205:5000/goods/add_goods"
+			},
+			"response": []
+		}
+	]
+}

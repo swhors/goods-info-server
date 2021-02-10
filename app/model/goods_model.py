@@ -66,7 +66,7 @@ class GoodsModel(SqLite):
                     goods_url: str, image_url: str,
                     mall_name: str, lprice: int,
                     hprice: int, updated: int):
-        wheres = [WheresData(Goods._col_name_,title, WhereConType.AND),\
+        wheres = [WheresData(Goods._col_name_,name, WhereConType.AND),\
                   WheresData(Goods._col_goods_id_,goods_id, WhereConType.NONE)]
 
         allcolums = {
