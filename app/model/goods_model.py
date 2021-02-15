@@ -18,7 +18,7 @@ class GoodsModel(SqLite):
 
 
     @classmethod
-    def rowToGoodsAll(self, items:[]) -> Goods:
+    def row_2_goods_all(self, items:[]) -> Goods:
         print(f'conver items = {items}')
         if len(items) == 10:
             goods = Goods(items[0], items[1],
@@ -31,15 +31,15 @@ class GoodsModel(SqLite):
         return None
 
 
-    def getGoods(self,
+    def get_goods(self,
                  name: str = None,
                  goods_id: int = -1,
                  sel_limit: int = 10):
         if name == None:
-            cnt, categories = super().selectAll(
+            cnt, categories = super().select_all(
                 orderby = f'order by {Goods._col_goods_id_} desc',
                 limit_num = sel_limit,
-                conv_callback = GoodsModel.rowToGoodsAll)
+                conv_callback = GoodsModel.row_2_goods_all)
         else:
             wheres = {Goods._col_name_:name}
             if goods_id > 0:
@@ -49,25 +49,31 @@ class GoodsModel(SqLite):
                 wheres = wheres,
                 orderby = f'order by {Goods._col_goods_id_} desc',
                 limit_num = sel_limit,
-                conv_callback = GoodsModel.rowToGoodsAll)
+                conv_callback = GoodsModel.row_2_goods_all)
         return cnt, categories
 
 
-    def deleteGoods(self, name: str, goods_id: int, mall_name: str):
+    def delete_goods(self, name: str, goods_id: int, mall_name: str):
         sql = f"delete from {Goods._table_name_} \n" +\
               f"    where {Goods._col_name_}={name} and \n" +\
               f"          {Goods._col_id_}={goods_id} and \n" +\
               f"          {Goods._col_mall_name_}={mall_name};"
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        cur.close()
+        if name == None:
+            super().delete_all()
+        else:
+            wheres = {Goods._col_name_:mall}
+            if goods_id >= 0:
+                wheres[Goods._col_goods_id_] = goods_id
+            if mall_name != None and 'str' in str(types(mall_name)):
+                wheres[Goods._col_mall_name_] = mall_name
+            super.delete(wheres)
 
 
-    def deleteAll(self):
-        super().deleteAll()
+    def delete_all(self):
+        super().delete_all()
 
 
-    def insertGoodsClass(self, goods: Goods):
+    def insert_goods_class(self, goods: Goods):
         self.insertGoods(name = goods.name,\
                         goods_id = goods.goods_id,\
                         goods_url = goods.goods_url,\
@@ -78,7 +84,7 @@ class GoodsModel(SqLite):
                         updated = goods.updated)
 
 
-    def insertGoods(self, name: str, goods_id: int,
+    def insert_goods(self, name: str, goods_id: int,
                     goods_url: str, image_url: str,
                     mall_name: str, lprice: int,
                     hprice: int, updated: int):
@@ -113,8 +119,8 @@ class GoodsModel(SqLite):
 
 
 @dispatch(GoodsModel, Goods)
-def insertGoods(self, goods: Goods):
-    self.insertGoods(name = goods.name,\
+def insert_goods(self, goods: Goods):
+    self.insert_goods(name = goods.name,\
                      goods_id = goods.goods_id,\
                      goods_url = goods.goods_url,\
                      image_url = goods.image_url,\
@@ -169,7 +175,7 @@ if __name__=="__main__":
         item = get_insert_item()
         if item != None:
             print(f'Goods = {item}')
-            goods.insertGoodsClass(goods = item)
+            goods.insert_goods_class(goods = item)
         else:
             print('Illegal goods info.')
         title = input(user_guide0)

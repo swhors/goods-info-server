@@ -128,7 +128,10 @@ class SqLite:
 
         cursor.close()
 
-        return len(return_list), return_list
+        data_size = len(return_list)
+        if data_size <= 0:
+            data_size = len(datas)
+        return data_size, return_list
 
 
     def insert(self, keyval:{}):
@@ -148,7 +151,7 @@ class SqLite:
         self._conn_.commit()
 
 
-    def delete(self, wheres: []):
+    def delete(self, wheres: {}):
 
         delete_where = self.make_wheres(wheres)
 
@@ -162,12 +165,11 @@ class SqLite:
         self._conn_.commit()
 
 
-    def deleteAll(self):
+    def delete_all(self):
+        self.delete(wheres=None)
 
-        self.delete(self, wheres=None)
 
-
-    def selectAll(self,
+    def select_all(self,
                   orderby: str,
                   limit_num: int,
                   conv_callback = None):
