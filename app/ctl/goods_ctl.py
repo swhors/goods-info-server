@@ -31,7 +31,6 @@ def get_categories():
         print(ca.toJson())
         cas_jsons.append(ca.toJson())
     return jsonify({"len":len(cas_jsons), "categories":cas_jsons})
-    #return json.dumps(ca)
 
 
 @goods_ctl.route('/inc_category_count/<title>', methods=['POST'])
@@ -46,9 +45,7 @@ def add_goods_with_id():
     # if len(params) == 0:
     #     return josnify({"result":"false", "reson":"no parameter"})
     params = request.get_json(force=True)
-    print(f'add_goods')
     if params != None:
-        print(f'params={params}')
         goods_name = params[Goods._col_name_]
         goods_id = params[Goods._col_goods_id_]
         goods_url = params[Goods._col_goods_url_]
@@ -69,3 +66,36 @@ def add_goods_with_id():
             )
         return jsonify({"result":"ok"})
     return jsonify({"result":"fail"})
+
+
+@goods_ctl.route('/get_goods_with_id', methods=['POST'])
+def get_goods_with_id():
+    params = request.args.to_dict()
+    if len(params) == 0 or Goods._col_name_ not in params.keys():
+        return josnify({"result":"false", "reson":"no parameter"})
+    print(f'get_goods')
+    name = params[Goods._col_name_]
+    if Goods._col_goods_id_ in params.keys():
+        goods_id = int(params[Goods._col_goods_id_])
+    else:
+        goods_id = -1
+    if 'limit' in params.keys():
+        sel_limit = int(params['limit'])
+    else:
+        sel_limit = 20
+    if name == '*':
+        cnt, goods_list = goods_model.getGoods(name = None,
+                                               goods_id = -1,
+                                               sel_limit = sel_limit)
+    else:
+        cnt, goods_list = goods_model.getGoods(name = name,
+                                               goods_id = goods_id,
+                                               sel_limit = sel_limit)
+    print(f'result={cnt}, \n       {goods_list}')
+    goods_json_list = []
+
+    for goods in goods_list:
+        print(goods.toJson())
+        goods_json_list.append(goods.toJson())
+
+    return jsonify({"len":cnt, "goods":goods_json_list})

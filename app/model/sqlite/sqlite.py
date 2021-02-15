@@ -2,10 +2,12 @@ import sqlite3
 import enum
 from app.model.sqlite import _db_name_ as db_name
 
+
 class WhereConType(enum.Enum):
     NONE = 0
     AND = 1
     OR = 3
+
 
 class WheresData:
     def __init__(self, key: str, val, where_con_type: WhereConType ):
@@ -29,6 +31,7 @@ class WheresData:
 class SqLite:
     _table_name_: str = ''
 
+
     def __init__(self, table_name: str, create_query: str):
         print("create SqLite")
         self._table_name_ = table_name
@@ -42,7 +45,8 @@ class SqLite:
         print("delete SqLite")
         self._conn_.close()
 
-    def make_wheres(self, wheres:[]) -> str:
+
+    def make_wheres(self, wheres:{}) -> str:
         delete_where =""
         if wheres != None and len(wheres) == 1:
             delete_where += "where "

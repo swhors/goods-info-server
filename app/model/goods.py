@@ -14,6 +14,7 @@ class Goods:
     _col_mall_name_='mall_name'
     _col_lprice_='lprice'
     _col_hprice_='hprice'
+    _col_cnt_='cnt'
     _col_updated_='updated'
     _col_created_='created'
     _table_name_='goods'
@@ -30,13 +31,17 @@ class Goods:
             f'    {cls._col_mall_name_} text,  \n' +\
             f'    {cls._col_lprice_} integer,  \n' +\
             f'    {cls._col_hprice_} integer,  \n' +\
+            f'    {cls._col_cnt_} integer,  \n' +\
             f'    {cls._col_updated_} datetime,  \n' +\
             f'    {cls._col_created_} datetime default current_timestamp);'
 
 
-    def __init__(self, name: str, goods_id: int,
-                 goods_url: str, image_url: str, mall_name: str,
-                 lprice: int, hprice: int, updated: int):
+    def __init__(self,
+                 name: str, goods_id: int,
+                 goods_url: str, image_url: str,
+                 mall_name: str, lprice: int,
+                 hprice: int, cnt: int,
+                 updated: int):
         self.id = 0
         self.name = name
         self.goods_id = goods_id
@@ -45,12 +50,14 @@ class Goods:
         self.mall_name = mall_name
         self.lprice = lprice
         self.hprice = hprice
+        self.cnt = 1
         self.updated = updated
         self.created = 0
 
 
     def __del__(self):
         pass
+
 
     def __str__(self):
         return f'id={self.id},' + \
@@ -61,22 +68,28 @@ class Goods:
                f'mall_name={self.mall_name},' + \
                f'hprice={self.lprice},' + \
                f'hprice={self.hprice},' + \
+               f'cnt={self.cnt},' + \
                f'updated={self.updated},' + \
                f'created={self.created}'
 
+
     def toJson(self):
         return json.dumps(self.__dict__)
+
 
     @staticmethod
     def fromJson(msg: str):
         return Goods()
 
+
 class GoodsEncoder(JSONEncoder):
         def default(self, o):
             return o.__dict__
 
+
 def goodsDecoder(goodsDict):
     return namedtuple('X', goodsDict.keys())(*goodsDict.values())
+
 
 if __name__=='__main__':
     print(__name__)

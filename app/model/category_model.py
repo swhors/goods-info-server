@@ -10,16 +10,11 @@ class CategoryModel(SqLite):
     def __init__(self):
         print("create CategoryModel")
         super(CategoryModel, self).__init__(Category._table_name_,Category.create_table())
-        # self.conn = sqlite3.connect(db_name, check_same_thread=False)
-        # cur = self.conn.cursor() # 2. 커서 생성 (트럭, 연결로프)
-        # cur.execute(Category.create_table())
-        # cur.close()
 
 
     def __del__(self):
         super(CategoryModel, self).__del__()
         print("delete CategoryModel")
-        # self.conn.close()
 
 
     def incCategoryCount(self, title: str):

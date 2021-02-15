@@ -19,23 +19,38 @@ class GoodsModel(SqLite):
 
     @classmethod
     def rowToGoodsAll(self, items:[]) -> Goods:
-        if len(items) == 9:
-            return Goods(items[0],items[1], items[2],
-                        items[3],items[4], items[5],
-                        items[6],items[7], items[8],
-                        )
+        print(f'conver items = {items}')
+        if len(items) == 10:
+            goods = Goods(items[0], items[1],
+                         items[2], items[3],
+                         items[4], items[5],
+                         items[6], items[7],
+                         items[9])
+            goods.cnt = items[8]
+            return goods
         return None
 
 
-    def getGoods(self, name: str = None, goods_is: int = 0):
-        categories = []
+    def getGoods(self,
+                 name: str = None,
+                 goods_id: int = -1,
+                 sel_limit: int = 10):
         if name == None:
             cnt, categories = super().selectAll(
-                f'order by cnt desc', 100,
-                GoodsModel.rowToGoodsAll)
+                orderby = f'order by {Goods._col_goods_id_} desc',
+                limit_num = sel_limit,
+                conv_callback = GoodsModel.rowToGoodsAll)
         else:
-            pass
-        return categories
+            wheres = {Goods._col_name_:name}
+            if goods_id > 0:
+                wheres[Goods._col_goods_id_] = goods_id
+            cnt, categories = super().select(
+                cols = None,
+                wheres = wheres,
+                orderby = f'order by {Goods._col_goods_id_} desc',
+                limit_num = sel_limit,
+                conv_callback = GoodsModel.rowToGoodsAll)
+        return cnt, categories
 
 
     def deleteGoods(self, name: str, goods_id: int, mall_name: str):
@@ -61,6 +76,7 @@ class GoodsModel(SqLite):
                         lprice = goods.lprice,\
                         hprice = goods.hprice,\
                         updated = goods.updated)
+
 
     def insertGoods(self, name: str, goods_id: int,
                     goods_url: str, image_url: str,
