@@ -7,6 +7,7 @@ import json
 
 from app.model.category import Category
 from app.model.category_model import CategoryModel
+from app.model.category_response import CategoryResonse
 
 category_model = CategoryModel()
 
@@ -22,11 +23,9 @@ def goods_get():
 @category_ctl.route('/get_categories', methods=['GET'])
 def get_categories():
     cas = category_model.get_categories()
-    cas_jsons = []
-    for ca in cas:
-        print(ca.toJson())
-        cas_jsons.append(ca.toJson())
-    return jsonify({"len":len(cas_jsons), "categories":cas_jsons})
+    response = CategoryResonse(len(cas), cas)
+    return response.toJson()
+    # return jsonify({"len":len(cas_jsons), "categories":cas_jsons})
 
 
 @category_ctl.route('/del_category', methods=['POST'])
