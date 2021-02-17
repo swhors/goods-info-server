@@ -1,9 +1,10 @@
+flask
 marshmallow
 panda
-sqlite3
+pysqlite3
 redis
 datetime
-collections
-json
+collection
 multipledispatch
 multimethods
+pyopenssl
