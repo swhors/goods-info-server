@@ -3,6 +3,8 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from flask import current_app as app
 from flask import jsonify
+from flask_ssl import *
+from flask_login import current_user, login_required
 import json
 
 from app.model.goods import Goods
@@ -14,6 +16,7 @@ goods_ctl=Blueprint('goods_ctl', __name__, url_prefix='/goods')
 
 
 @goods_ctl.route('/add_goods', methods=['POST'])
+@login_required
 def add_goods_with_id():
     params = request.get_json(force=True)
     if params != None:
@@ -39,14 +42,11 @@ def add_goods_with_id():
     return jsonify({"result":"fail"})
 
 
-@goods_ctl.route('/get_goods_with_id', methods=['POST'])
-def get_goods_with_id():
-
+def get_goods_with_id_internal(request):
     params = request.args.to_dict()
 
     if len(params) == 0 or Goods._col_name_ not in params.keys():
         return josnify({"result":"false", "reson":"no parameter"})
-
     name = params[Goods._col_name_]
 
     if Goods._col_goods_id_ in params.keys():
@@ -78,8 +78,25 @@ def get_goods_with_id():
     return jsonify({"len":cnt, "goods":goods_json_list})
 
 
-@goods_ctl.route('/del_goods_with_id', methods=['POST'])
-def del_goods_with_id():
+@goods_ctl.route('/get_goods_with_id', methods=['POST'])
+def get_goods_with_id():
+    return get_goods_with_id_internal(request)
+
+@goods_ctl.route('/get_goods_with_id_with_login', methods=['POST'])
+@login_required
+def get_goods_with_id_with_login():
+    return get_goods_with_id_internal(request)
+
+
+@goods_ctl.route('/get_goods_with_id_with_token', methods=['POST'])
+@login_required
+def get_goods_with_id_with_token():
+    return get_goods_with_id_internal(request)
+
+
+@goods_ctl.route('/del_goods_with_id_with_login', methods=['POST'])
+@login_required
+def del_goods_with_id_with_login():
 
     params = request.args.to_dict()
 

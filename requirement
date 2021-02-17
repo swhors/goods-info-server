@@ -1,4 +1,9 @@
 flask
+flask_ssl
+flask-login
+Flask-RESTful
+Flask-API
+requests
 marshmallow
 panda
 pysqlite3
@@ -7,4 +12,5 @@ datetime
 collection
 multipledispatch
 multimethods
+setuptools_rust
 pyopenssl
