@@ -19,7 +19,7 @@ class GoodsModel(SqLite):
 
 
     @classmethod
-    def row_2_goods_all(self, items:[]) -> Goods:
+    def row_2_goods_all(cls, items:[]) -> Goods:
         print(f'conver items = {items}')
         if len(items) == 10:
             goods = Goods(items[0], items[1],

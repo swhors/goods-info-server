@@ -8,9 +8,10 @@ from app.model.data.blacklisttoken import BlacklistToken
 class User:
 
     _table_name_='user'
+
     _col_id_='id'
-    _col_userid='userid'
-    _col_username='username'
+    _col_userid_='userid'
+    _col_username_='username'
     _col_email_='email'
     _col_password_='password'
     _col_created_='created'
@@ -34,6 +35,41 @@ class User:
         self._email_ = email
         self._password_ = password
         self._created_ = datetime.datetime.now()
+
+
+    @property
+    def table_name(self):
+        return self._table_name_
+
+
+    @property
+    def col_username(self):
+        return self._col_username_
+
+
+    @property
+    def col_userid(self):
+        return self._col_userid_
+
+
+    @property
+    def id(self):
+        return self._id_
+
+
+    @id.setter
+    def id(self, _id):
+        self._id_ = _id
+
+
+    @property
+    def created(self):
+        return self._created_
+
+
+    @created.setter
+    def created(self, _created):
+        self._created_ = _created
 
 
     @property

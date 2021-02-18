@@ -38,7 +38,7 @@ class CategoryModel(SqLite):
 
 
     @classmethod
-    def row_2_category_all(self, items:[]) -> Category:
+    def row_2_category_all(cls, items:[]) -> Category:
         if len(items) == 3:
             return Category(items[0],items[1], items[2])
         return None

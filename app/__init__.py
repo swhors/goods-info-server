@@ -13,6 +13,8 @@ from app.ctl.goods_ctl import goods_ctl
 from app.ctl.category_ctl import category_ctl
 from app.ctl.loginout_ctl import loginout_ctl
 
+from app.model.user_model import UserModel
+
 app=Flask(__name__)
 
 app.secret_key = os.urandom(24)
@@ -25,6 +27,8 @@ app.register_blueprint(loginout_ctl)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+user_model = UserModel()
+
 @login_manager.user_loader
-def user_loader(user_id):
-    return USERS[user_id]
+def user_loader(user_id) -> User:
+    return user_model.find_user(user_id)
