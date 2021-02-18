@@ -7,8 +7,8 @@ from flask_login import LoginManager
 from flask_login import login_user, logout_user, current_user, login_required
 import json
 
-from app.model.user import User
-from app.model.user import USERS
+from app.model.data.user import User
+from app.model.data.user import USERS
 
 loginout_ctl=Blueprint('loginout_ctl', __name__, url_prefix='/auth')
 
@@ -18,8 +18,8 @@ loginout_ctl=Blueprint('loginout_ctl', __name__, url_prefix='/auth')
 @login_required
 def auth_func():
     user = current_user
-    json_res = {'ok': True, 'msg': 'auth_func(%s),user_id=%s'
-                                   % (request.json, user.user_id)}
+    json_res = {'ok': True, 'msg': 'auth_func(%s),userid=%s'
+                                   % (request.json, user.userid)}
     return jsonify(json_res)
 
 
@@ -34,31 +34,31 @@ def notauth_func():
 @ssl_require
 @loginout_ctl.route("/add_user", methods=['POST'])
 def addUser():
-    user_id = request.json['user_id']
+    userid = request.json['userid']
     passwd_hash = request.json['passwd_hash']
-    if user_id in USERS:
-        json_res = {'ok': False, 'error': 'user <%s> already exists' % user_id}
+    if userid in USERS:
+        json_res = {'ok': False, 'error': 'user <%s> already exists' % userid}
     else:
-        user = User(user_id, passwd_hash)
-        USERS[user_id] = user
-        json_res = {'ok': True, 'msg': 'user <%s> added' % user_id}
+        user = User(userid, passwd_hash)
+        USERS[userid] = user
+        json_res = {'ok': True, 'msg': 'user <%s> added' % userid}
     return jsonify(json_res)
 
 
 @ssl_require
 @loginout_ctl.route('/login', methods=['POST'])
 def login():
-    user_id = request.json['user_id']
+    userid = request.json['userid']
     passwd_hash = request.json['passwd_hash']
-    if user_id not in USERS:
+    if userid not in USERS:
         json_res={'ok': False, 'error': 'Error : not found user'}
-    elif not USERS[user_id].can_login(passwd_hash):
+    elif not USERS[userid].can_login(passwd_hash):
         json_res = {'ok': False, 'error': 'Error : invalid password'}
     else:
-        json_res={'ok': True, 'msg': 'user <%s> logined' % user_id}
+        json_res={'ok': True, 'msg': 'user <%s> logined' % userid}
 
-        USERS[user_id].authenticated = True
-        login_user(USERS[user_id], remember=True)
+        USERS[userid].authenticated = True
+        login_user(USERS[userid], remember=True)
     print(f'{json_res}')
     return jsonify(json_res)
 
@@ -69,7 +69,7 @@ def login():
 def logout():
     user = current_user
     user.authenticated = False
-    json_res = {'ok': True, 'msg': 'user <%s> logout' % user.user_id}
+    json_res = {'ok': True, 'msg': 'user <%s> logout' % user.userid}
     logout_user()
     print(f'{json_res}')
     return jsonify(json_res)

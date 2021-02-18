@@ -1,6 +1,6 @@
 import json
 
-from app.model.category import Category
+from app.model.data.category import Category
 
 class CategoryResonse:
 

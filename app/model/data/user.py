@@ -1,8 +1,8 @@
-from .. import db, flask_bcrypt
+import flask_bcrypt
 import datetime
-from app.model.data.blacklisttoken import BlacklistToken
-from ..config import key
 import jwt
+from app.model.data.blacklisttoken import BlacklistToken
+# from ..config import key
 
 
 class User:
@@ -14,13 +14,6 @@ class User:
     _col_email_='email'
     _col_password_='password'
     _col_created_='created'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    userid = db.Column(db.String(100), unique=True)
-    username = db.Column(db.String(50), unique=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(100))
-    created = db.Column(db.DateTime, nullable=False)
 
 
     @classmethod
@@ -41,6 +34,47 @@ class User:
         self._email_ = email
         self._password_ = password
         self._created_ = datetime.datetime.now()
+
+
+    @property
+    def userid(self):
+        return self._userid_
+
+
+    @userid.setter
+    def userid(self, userid):
+        self._userid_ = userid
+
+
+    @property
+    def username(self):
+        return self._username_
+
+
+    @username.setter
+    def username(self, username):
+        self._username_ = username
+
+
+    @property
+    def email(self):
+        return self._email_
+
+
+    @email.setter
+    def email(self, email):
+        self._email_ = email
+
+
+    @property
+    def password(self):
+        raise AttributeError('password: write-only field')
+
+
+    @password.setter
+    def password(self, password):
+        self._password_ = password
+        # flask_bcrypt.generate_password_hash(password).decode('utf-8')
 
 
     def __repr__(self):
@@ -65,15 +99,8 @@ class User:
     def get_id(self):
         return self._userid_
 
-
-    @property
-    def password(self):
-        raise AttributeError('password: write-only field')
-
-
-    @password.setter
-    def password(self, password):
-        self._password_ = password flask_bcrypt.generate_password_hash(password).decode('utf-8')
+    def is_authenticated(self):
+        return True
 
 
     def check_password(self, password):

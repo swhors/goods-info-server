@@ -1,6 +1,6 @@
 import sqlite3
 import enum
-from app.model.sqlite import _db_name_ as db_name
+from app.util.sqlite import _db_name_ as db_name
 
 
 class WhereConType(enum.Enum):

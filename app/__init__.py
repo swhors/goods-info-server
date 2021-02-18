@@ -5,8 +5,8 @@ from flask_login import LoginManager
 import os
 
 
-from app.model.user import User
-from app.model.user import USERS
+from app.model.data.user import User
+from app.model.data.user import USERS
 
 from app.ctl.main_ctl import main_ctl
 from app.ctl.goods_ctl import goods_ctl

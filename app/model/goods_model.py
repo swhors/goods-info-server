@@ -2,7 +2,7 @@ import sqlite3
 
 from app.model.data.goods import Goods
 from app.model import _db_name_ as db_name
-from app.model.sqlite.sqlite import SqLite, WhereConType, WheresData
+from app.util.sqlite.sqlite import SqLite, WhereConType, WheresData
 from multipledispatch import dispatch
 from multimethods import multimethod
 

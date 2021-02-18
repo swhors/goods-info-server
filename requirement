@@ -3,6 +3,7 @@ flask_ssl
 flask-login
 Flask-RESTful
 Flask-API
+flask-bcrypt
 requests
 marshmallow
 panda

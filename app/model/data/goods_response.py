@@ -1,6 +1,6 @@
 import json
 
-from app.model.goods import Goods
+from app.model.data.goods import Goods
 
 class GoodsResponse:
 
