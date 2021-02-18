@@ -1,5 +1,5 @@
 import sqlite3
-from app.model.category import Category
+from app.model.data.category import Category
 from app.model import _db_name_ as db_name
 from app.model.sqlite.sqlite import SqLite, WhereConType, WheresData
 

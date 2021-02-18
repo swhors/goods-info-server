@@ -7,7 +7,8 @@ from flask_ssl import *
 from flask_login import current_user, login_required
 import json
 
-from app.model.goods import Goods
+from app.model.data.goods import Goods
+from app.model.data.goods_response import GoodsResponse
 from app.model.goods_model import GoodsModel
 
 goods_model = GoodsModel()

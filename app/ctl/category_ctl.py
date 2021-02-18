@@ -8,9 +8,10 @@ from flask_login import current_user, login_required
 
 import json
 
-from app.model.category import Category
+from app.model.data.category import Category
+from app.model.data.category_response import CategoryResonse
 from app.model.category_model import CategoryModel
-from app.model.category_response import CategoryResonse
+
 
 category_model = CategoryModel()
 
