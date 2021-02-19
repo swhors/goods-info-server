@@ -10,20 +10,25 @@ class WhereConType(enum.Enum):
 
 
 class WheresData:
+
     def __init__(self, key: str, val, where_con_type: WhereConType ):
         self._key_ = key
         self._val_ = val
         self._where_con_type_ = where_con_type
 
 
+    @property
     def key(self) -> str:
         return self._key_
 
 
+
+    @property
     def val(self):
         return self._val_
 
 
+    @property
     def where_con_type(self) -> WhereConType:
         return self._where_con_type_
 
@@ -46,19 +51,20 @@ class SqLite:
         self._conn_.close()
 
 
-    def make_wheres(self, wheres:{}) -> str:
+    def make_wheres(self, wheres:[]) -> str:
         delete_where =""
-        if wheres != None and len(wheres) == 1:
+        if wheres != None and len(wheres) > 0:
             delete_where += "where "
             for where in wheres:
-                if 'str' in str(type(where.val())):
+                print(f'make_wheres, where={where.key}, {where.val}, {where.where_con_type}')
+                if 'str' in str(type(where.val)):
                     delete_where +=\
-                        f'{where.key()}=\'{where.val()}\''
+                        f'{where.key}=\'{where.val}\''
                 else:
                     delete_where +=\
-                        f'{where.key()}={where.val()}'
-                if where.where_con_type() != WhereConType.NONE:
-                    delete_where += f' {where.where_con_type().name} '
+                        f'{where.key}={where.val}'
+                if where.where_con_type != WhereConType.NONE:
+                    delete_where += f' {where.where_con_type.name} '
                 else:
                     delete_where += ' '
         return delete_where
@@ -108,7 +114,11 @@ class SqLite:
             limit_num_str = f'limit {limit_num}'
 
         sql = f'select {select_cols} from {self._table_name_}' + \
-              f' {select_where} {orderby} {limit_num_str};'
+              f' {select_where}'
+        if orderby != None:
+            sql = f'{sql} {orderby} {limit_num_str};'
+        else:
+            sql = f'{sql} {limit_num_str};'
 
         print(f'query={sql}')
 

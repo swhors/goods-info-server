@@ -38,21 +38,6 @@ class User:
 
 
     @property
-    def table_name(self):
-        return self._table_name_
-
-
-    @property
-    def col_username(self):
-        return self._col_username_
-
-
-    @property
-    def col_userid(self):
-        return self._col_userid_
-
-
-    @property
     def id(self):
         return self._id_
 
@@ -135,7 +120,8 @@ class User:
     def get_id(self):
         return self._userid_
 
-    def is_authenticated(self):
+
+    def is_authenticated(self) -> bool:
         return True
 
 

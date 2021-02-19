@@ -26,8 +26,8 @@ app.register_blueprint(loginout_ctl)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-user_model = UserService()
+from app.ctl.loginout_ctl import user_service
 
 @login_manager.user_loader
 def user_loader(user_id) -> User:
-    return user_model.find_user(user_id)
+    return user_service.find_user(user_id)

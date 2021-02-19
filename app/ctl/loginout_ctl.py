@@ -10,6 +10,11 @@ import json
 from app.model.user import User
 from app.model.user import USERS
 
+from app.service.user_service import UserService
+
+user_service = UserService()
+
+
 loginout_ctl=Blueprint('loginout_ctl', __name__, url_prefix='/auth')
 
 
@@ -33,15 +38,40 @@ def notauth_func():
 
 @ssl_require
 @loginout_ctl.route("/add_user", methods=['POST'])
-def addUser():
+def add_user():
     userid = request.json['userid']
-    passwd_hash = request.json['passwd_hash']
-    if userid in USERS:
+    username = request.json['username']
+    email = request.json['email']
+    password = request.json['password']
+    ret = user_service.add_user(userid, username, email, password)
+    if ret == False:
         json_res = {'ok': False, 'error': 'user <%s> already exists' % userid}
     else:
-        user = User(userid, passwd_hash)
-        USERS[userid] = user
         json_res = {'ok': True, 'msg': 'user <%s> added' % userid}
+    return jsonify(json_res)
+
+
+@ssl_require
+@loginout_ctl.route("/get_user", methods=['POST'])
+def get_user():
+    userid = request.json['userid']
+    ret, user = user_service.get_user(userid)
+    if ret == False:
+        json_res = {'ok': False, 'error': 'user <%s> does not exist' % userid}
+    else:
+        json_res = {'ok': True, 'info': '<%s>' % str(user)}
+    return jsonify(json_res)
+
+
+@ssl_require
+@loginout_ctl.route("/del_user", methods=['POST'])
+def del_user():
+    userid = request.json['userid']
+    ret = user_service.del_user(userid)
+    if ret == False:
+        json_res = {'ok': False, 'error': 'user <%s> does not exist' % userid}
+    else:
+        json_res = {'ok': True, 'msg': 'user <%s> is deleted' % userid}
     return jsonify(json_res)
 
 
@@ -49,7 +79,7 @@ def addUser():
 @loginout_ctl.route('/login', methods=['POST'])
 def login():
     userid = request.json['userid']
-    passwd_hash = request.json['passwd_hash']
+    passwd_hash = request.json['password']
     if userid not in USERS:
         json_res={'ok': False, 'error': 'Error : not found user'}
     elif not USERS[userid].can_login(passwd_hash):
