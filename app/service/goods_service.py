@@ -1,21 +1,22 @@
 import sqlite3
 
-from app.model.data.goods import Goods
+from app.model.goods import Goods
 from app.model import _db_name_ as db_name
 from app.util.sqlite.sqlite import SqLite, WhereConType, WheresData
 from multipledispatch import dispatch
 from multimethods import multimethod
 
 
-class GoodsModel(SqLite):
+class GoodsService(SqLite):
     def __init__(self):
-        print("create GoodsModel")
-        super(GoodsModel, self).__init__(Goods._table_name_,Goods.create_table())
+        print("create GoodsService")
 
+        super(GoodsService, self).\
+              __init__(Goods._table_name_,Goods.create_table())
 
     def __del__(self):
-        super(GoodsModel, self).__del__()
-        print("delete GoodsModel")
+        super(GoodsService, self).__del__()
+        print("delete GoodsService")
 
 
     @classmethod
@@ -40,7 +41,7 @@ class GoodsModel(SqLite):
             cnt, categories = super().select_all(
                 orderby = f'order by {Goods._col_goods_id_} desc',
                 limit_num = sel_limit,
-                conv_callback = GoodsModel.row_2_goods_all)
+                conv_callback = GoodsService.row_2_goods_all)
         else:
             wheres = {Goods._col_name_:name}
             if goods_id > 0:
@@ -50,7 +51,7 @@ class GoodsModel(SqLite):
                 wheres = wheres,
                 orderby = f'order by {Goods._col_goods_id_} desc',
                 limit_num = sel_limit,
-                conv_callback = GoodsModel.row_2_goods_all)
+                conv_callback = GoodsService.row_2_goods_all)
         return cnt, categories
 
 
@@ -119,7 +120,7 @@ class GoodsModel(SqLite):
             super().update(keyval = updateColumns, wheres = wheres)
 
 
-@dispatch(GoodsModel, Goods)
+@dispatch(GoodsService, Goods)
 def insert_goods(self, goods: Goods):
     self.insert_goods(name = goods.name,\
                      goods_id = goods.goods_id,\
@@ -168,7 +169,7 @@ def get_insert_item() -> Goods:
 
 
 if __name__=="__main__":
-    goods = GoodsModel()
+    goods = GoodsService()
     user_guide0 = "Type enter or anything to input goods info " + \
                   "( to exit type exit): "
     title: str = input(user_guide0)

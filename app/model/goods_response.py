@@ -1,16 +1,16 @@
 import json
 
-from app.model.data.category import Category
+from app.model.goods import Goods
 
-class CategoryResonse:
+class GoodsResponse:
 
     len: int
-    categories: []
+    goods: []
 
 
-    def __init__(self, len: int, categories: []):
+    def __init__(self, len: int, goods: []):
         self.len = len
-        self.categories = categories
+        self.goods = goods
 
 
     def __del__(self):
@@ -19,7 +19,7 @@ class CategoryResonse:
 
     def __str__(self):
         return f'len={self.len},' + \
-               f'categories={self.categories}'
+               f'goods={self.goods}'
 
 
     def toJson(self):
@@ -31,6 +31,6 @@ class CategoryResonse:
 
 if __name__=='__main__':
     print(__name__)
-    categories = CategoryResonse(1, [Category(1, "test", 1)])
-    print(categories)
-    print(categories.toJson())
+    goods = GoodsResponse(1, [Goods(1, "test", 1)])
+    print(goods)
+    print(goods.toJson())

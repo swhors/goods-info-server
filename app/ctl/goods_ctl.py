@@ -7,11 +7,11 @@ from flask_ssl import *
 from flask_login import current_user, login_required
 import json
 
-from app.model.data.goods import Goods
-from app.model.data.goods_response import GoodsResponse
-from app.model.goods_model import GoodsModel
+from app.model.goods import Goods
+from app.model.goods_response import GoodsResponse
+from app.service.goods_service import GoodsService
 
-goods_model = GoodsModel()
+goods_model = GoodsService()
 
 goods_ctl=Blueprint('goods_ctl', __name__, url_prefix='/goods')
 

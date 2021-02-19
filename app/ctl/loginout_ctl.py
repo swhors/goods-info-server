@@ -7,8 +7,8 @@ from flask_login import LoginManager
 from flask_login import login_user, logout_user, current_user, login_required
 import json
 
-from app.model.data.user import User
-from app.model.data.user import USERS
+from app.model.user import User
+from app.model.user import USERS
 
 loginout_ctl=Blueprint('loginout_ctl', __name__, url_prefix='/auth')
 

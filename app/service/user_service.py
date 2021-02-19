@@ -1,14 +1,14 @@
 import sqlite3
-from app.model.data.user import User
+from app.model.user import User
 from app.model import _db_name_ as db_name
 from app.util.sqlite.sqlite import SqLite, WhereConType, WheresData
 
 
-class UserModel(SqLite):
+class UserService(SqLite):
 
     def __init__(self):
         print("create UserModel")
-        super(UserModel, self).\
+        super(UserService, self).\
               __init__(User.table_name, User.create_table())
 
 

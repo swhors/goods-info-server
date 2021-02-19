@@ -1,21 +1,20 @@
 import sqlite3
-from app.model.data.category import Category
+from app.model.category import Category
 from app.model import _db_name_ as db_name
 from app.util.sqlite.sqlite import SqLite, WhereConType, WheresData
 
 
-class CategoryModel(SqLite):
-
+class CategoryService(SqLite):
 
     def __init__(self):
-        print("create CategoryModel")
-        super(CategoryModel, self).\
+        print("create CategoryService")
+        super(CategoryService, self).\
             __init__(Category._table_name_,Category.create_table())
 
 
     def __del__(self):
-        super(CategoryModel, self).__del__()
-        print("delete CategoryModel")
+        super(CategoryService, self).__del__()
+        print("delete CategoryService")
 
 
     def inc_category_count(self, title: str):
@@ -47,13 +46,13 @@ class CategoryModel(SqLite):
     def get_categories(self):
         rowsCnt, categories = super().select_all(
             f'order by {Category._col_cnt_} desc', 10,
-            CategoryModel.row_2_category_all
+            CategoryService.row_2_category_all
         )
         return categories
 
 
 if __name__=="__main__":
-    category = CategoryModel()
+    category = CategoryService()
     title: str = input("Type something to test this ( to exit type exit): ")
     while title != 'exit':
         category.incCategoryCount(title)
