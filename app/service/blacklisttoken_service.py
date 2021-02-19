@@ -9,17 +9,17 @@ class BlacklistTokenService(SqLite):
     def __init__(self):
         print("create BlacklistTokenService")
         super(BlacklistTokenService, self).\
-            __init__(BlacklistTokenory._table_name_,\
+            __init__(BlacklistToken._table_name_,\
                      BlacklistToken.create_table())
 
     @classmethod
     def row_2_token(cls, items:[]) -> BlacklistToken:
-    if len(items) == 3:
-        token = BlacklistToken(items[1])
-        token.id = items[0]
-        token.created = items[5]
-        return token
-    return None
+        if len(items) == 3:
+            token = BlacklistToken(items[1])
+            token.id = items[0]
+            token.created = items[2]
+            return token
+        return None
 
 
     def make_where_with_token(self, token: str) -> []:
@@ -31,7 +31,7 @@ class BlacklistTokenService(SqLite):
         return wheres
 
 
-    def is_black_listed(self, token: str) -> bool:
+    def is_blacklist(self, token: str) -> bool:
         wheres = self.make_where_with_token(token)
         cols = [BlacklistToken._col_token_]
 
@@ -48,7 +48,10 @@ class BlacklistTokenService(SqLite):
 
 
     def get_all_blacklist(self) -> []:
-        len1, lists = super().select_all(conv_callback=row_2_token)
+        len1, lists = super().select_all(
+                    orderby=None,
+                    limit_num = 100,
+                    conv_callback=BlacklistTokenService.row_2_token)
 
         if len1 > 0:
             return True, lists
@@ -56,8 +59,8 @@ class BlacklistTokenService(SqLite):
         return False, None
 
 
-    def add_black_list(self, token: str) -> bool:
-        if self.is_black_listed(token):
+    def add_blacklist(self, token: str) -> bool:
+        if self.is_blacklist(token):
             return False
         else:
             allcolums = {
@@ -67,10 +70,9 @@ class BlacklistTokenService(SqLite):
         return True
 
 
-    def del_black_list(self, token:str) -> bool:
-        if self.is_black_listed(token):
-            return False
-        else:
+    def del_blacklist(self, token:str) -> bool:
+        if self.is_blacklist(token):
             wheres = self.make_where_with_token(token)
             super().delete(wheres = wheres)
-        return True
+            return True
+        return False

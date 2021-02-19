@@ -11,6 +11,10 @@ from app.model.user import User
 from app.model.user import USERS
 
 from app.service.user_service import UserService
+from app.service.blacklisttoken_service import BlacklistTokenService
+from app.model.blacklisttoken import BlacklistToken
+from app.model.blacklisttoken_response import BlacklistTokenResponse
+
 
 user_service = UserService()
 blacklisttoken_service = BlacklistTokenService()
@@ -107,10 +111,10 @@ def logout():
 
 
 @ssl_require
-@loginout_ctl.route("/add_token", methods=['POST'])
+@loginout_ctl.route("/add_blacklist", methods=['POST'])
 def add_token():
     token = request.json['token']
-    ret = blacklisttoken_service.add_token(token)
+    ret = blacklisttoken_service.add_blacklist(token)
     if ret == False:
         json_res = {'ok': False, 'error': 'token <%s> already exists' % token}
     else:
@@ -119,10 +123,10 @@ def add_token():
 
 
 @ssl_require
-@loginout_ctl.route("/is_token_balcklisted", methods=['POST'])
-def is_token_balcklisted():
+@loginout_ctl.route("/is_blacklist", methods=['POST'])
+def is_balcklist():
     token = request.json['token']
-    ret = blacklisttoken_service.is_black_listed(token)
+    ret = blacklisttoken_service.is_blacklist(token)
     if ret == False:
         json_res = {'ok': False, 'error': 'token <%s> does not exist' % token}
     else:
@@ -131,10 +135,10 @@ def is_token_balcklisted():
 
 
 @ssl_require
-@loginout_ctl.route("/del_token", methods=['POST'])
+@loginout_ctl.route("/del_blacklist", methods=['POST'])
 def del_token():
     token = request.json['token']
-    ret = blacklisttoken_service.del_token(token)
+    ret = blacklisttoken_service.del_blacklist(token)
     if ret == False:
         json_res = {'ok': False, 'error': 'token <%s> does not exist' % token}
     else:
@@ -144,10 +148,9 @@ def del_token():
 
 @ssl_require
 @loginout_ctl.route("/get_all_blacklist", methods=['POST'])
-def is_token_balcklisted():
+def get_all_blacklist():
     ret, lists = blacklisttoken_service.get_all_blacklist()
     if ret == False:
-        json_res = {'ok': False, 'error': 'does not have registered token'}
-    else:
-        json_res = {'ok': True, 'tokens': lists}
-    return jsonify(json_res)
+        return jsonify({'ok': False, 'error': 'does not have registered token'})
+
+    return BlacklistTokenResponse(ret, lists).toJson()
