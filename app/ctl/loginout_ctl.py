@@ -13,6 +13,7 @@ from app.model.user import USERS
 from app.service.user_service import UserService
 
 user_service = UserService()
+blacklisttoken_service = BlacklistTokenService()
 
 
 loginout_ctl=Blueprint('loginout_ctl', __name__, url_prefix='/auth')
@@ -102,4 +103,51 @@ def logout():
     json_res = {'ok': True, 'msg': 'user <%s> logout' % user.userid}
     logout_user()
     print(f'{json_res}')
+    return jsonify(json_res)
+
+
+@ssl_require
+@loginout_ctl.route("/add_token", methods=['POST'])
+def add_token():
+    token = request.json['token']
+    ret = blacklisttoken_service.add_token(token)
+    if ret == False:
+        json_res = {'ok': False, 'error': 'token <%s> already exists' % token}
+    else:
+        json_res = {'ok': True, 'msg': 'token <%s> added' % token}
+    return jsonify(json_res)
+
+
+@ssl_require
+@loginout_ctl.route("/is_token_balcklisted", methods=['POST'])
+def is_token_balcklisted():
+    token = request.json['token']
+    ret = blacklisttoken_service.is_black_listed(token)
+    if ret == False:
+        json_res = {'ok': False, 'error': 'token <%s> does not exist' % token}
+    else:
+        json_res = {'ok': True, 'msg': 'token <%s> is registered' % str(token)}
+    return jsonify(json_res)
+
+
+@ssl_require
+@loginout_ctl.route("/del_token", methods=['POST'])
+def del_token():
+    token = request.json['token']
+    ret = blacklisttoken_service.del_token(token)
+    if ret == False:
+        json_res = {'ok': False, 'error': 'token <%s> does not exist' % token}
+    else:
+        json_res = {'ok': True, 'msg': 'token <%s> is deleted' % token}
+    return jsonify(json_res)
+
+
+@ssl_require
+@loginout_ctl.route("/get_all_blacklist", methods=['POST'])
+def is_token_balcklisted():
+    ret, lists = blacklisttoken_service.get_all_blacklist()
+    if ret == False:
+        json_res = {'ok': False, 'error': 'does not have registered token'}
+    else:
+        json_res = {'ok': True, 'tokens': lists}
     return jsonify(json_res)
