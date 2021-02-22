@@ -15,11 +15,12 @@ class UserService(SqLite):
     @classmethod
     def row_2_user(cls, items:[]) -> User:
         print(f'conver items = {items}')
-        if len(items) == 6:
+        if len(items) == 7:
             user = User(items[1], items[2],
-                        items[3], items[4])
+                        items[3], items[5])
             user.id = items[0]
-            user.created = items[5]
+            user.token = items[4]
+            user.created = items[6]
             print(f'row_2_user, user={user}')
             return user
         return None
@@ -35,8 +36,8 @@ class UserService(SqLite):
         return wheres
 
 
-    def get_user(self, userid: str, get_val: bool = True) -> User:
-        print(f'get_user, user_id={userid}')
+    def get_user(self, userid: str, get_val: bool = True) -> (bool, User):
+        print(f'get_user, user_id={userid}, get_val={get_val}')
 
         if get_val == True:
             conv_callback = UserService.row_2_user
@@ -54,11 +55,14 @@ class UserService(SqLite):
 
         print(f'get_user, cnt={cnt} / user={user}')
 
-        if cnt > 0 and user != None:
-            print(f'get_user, user={user}')
-            return user[0]
+        if cnt > 0:
+            if user != None and len(user) > 0:
+                print(f'get_user, user={user}')
+                return True, user[0]
+            else:
+                return True, None
 
-        return None
+        return False, None
 
 
     def add_user(self,
@@ -66,11 +70,11 @@ class UserService(SqLite):
                  username: str,
                  email: str,
                  password: str) -> bool:
-        user = self.get_user(userid, False)
+        ret, user = self.get_user(userid, False)
 
         print(f'add_user = {user}')
 
-        if user == None or len(user) == 0:
+        if user == None:
             allcolums = {
                 User._col_userid_:userid,
                 User._col_username_:username,
@@ -87,13 +91,24 @@ class UserService(SqLite):
 
     def del_user(self, userid: str):
 
-        user = self.get_user(userid, False)
+        ret, user = self.get_user(userid, False)
 
         print(f'del_user = {user}')
 
-        if user == None or len(user) == False:
-            return False
+        if user != None:
+            super().delete(self.get_where_only_id(userid))
+            return True
 
-        super().delete(self.get_where_only_id(userid))
+        return False
 
-        return True
+
+    def update_token(self, userid: str, token: str):
+
+        ret, user = self.get_user(userid, False)
+
+        if user != None:
+            keyval = {User._col_token_:token1}
+            super().update(keyval, self.get_where_only_id(userid))
+            return True
+
+        return False

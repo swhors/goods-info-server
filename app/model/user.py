@@ -16,6 +16,7 @@ class User:
     _col_email_='email'
     _col_password_='password'
     _col_created_='created'
+    _col_token_='token'
 
 
     @classmethod
@@ -25,6 +26,7 @@ class User:
                f'    {cls._col_userid_} text,  \n' +\
                f'    {cls._col_username_} text,  \n' +\
                f'    {cls._col_email_} text,  \n' +\
+               f'    {cls._col_token_} text default \'\',  \n' +\
                f'    {cls._col_password_} text,  \n' +\
                f'    {cls._col_created_} datetime default current_timestamp);'
 
@@ -36,6 +38,7 @@ class User:
         self._email_ = email
         self._password_ = password
         self._created_ = datetime.datetime.now()
+        self._token_ = ''
 
 
     @property
@@ -98,6 +101,16 @@ class User:
         # flask_bcrypt.generate_password_hash(password).decode('utf-8')
 
 
+    @property
+    def token(self):
+        return self._token_
+
+
+    @token.setter
+    def token(self, token):
+        self._token_ = token
+
+
     def __repr__(self):
         r = {
             'userid': self._userid_,
@@ -129,7 +142,7 @@ class User:
         return flask_bcrypt.check_password_hash(self._password_, password)
 
 
-    def encode_auth_token(self, user_id = None) -> str:
+    def encode_auth_token(self, user_id = None) -> bytes:
         """
         Generates the Auth Token
         :return: string
@@ -156,23 +169,20 @@ class User:
 
     def login(self, user_pwd: str) -> str:
         if self.password == user_pwd:
+            print(f'p1\({self.password}\) == p2\({user_pwd}\)')
             return self.encode_auth_token()
         return None
 
 
     @staticmethod
-    def decode_auth_token(auth_token):
+    def decode_auth_token(auth_token) -> (bool, str):
         try:
             payload = jwt.decode(auth_token, Config.jwt_key)
-            is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
-            if is_blacklisted_token:
-                return 'Token blacklisted. Please log in again.'
-            else:
-                return payload['sub']
+            return True, payload['sub']
         except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
+            return False, 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
+            return False, 'Invalid token. Please log in again.'
 
 
 

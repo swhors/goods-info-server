@@ -62,13 +62,3 @@ class BlacklistToken:
                f'    {cls._col_id_} integer primary key autoincrement, \n' +\
                f'    {cls._col_token_} text,  \n' +\
                f'    {cls._col_created_} datetime default current_timestamp);'
-
-
-    @staticmethod
-    def check_blacklist(auth_token):
-        # check whether auth token has been blacklisted
-        res = BlacklistToken.query.filter_by(token=str(auth_token)).first()
-        if res:
-            return True
-        else:
-            return False

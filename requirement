@@ -15,3 +15,4 @@ multipledispatch
 multimethods
 setuptools_rust
 pyopenssl
+pyjwt
