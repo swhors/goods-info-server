@@ -30,4 +30,4 @@ from app.ctl.loginout_ctl import user_service
 
 @login_manager.user_loader
 def user_loader(user_id) -> User:
-    return user_service.find_user(user_id)
+    return user_service.get_user(user_id)

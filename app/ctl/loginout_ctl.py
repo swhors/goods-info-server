@@ -60,8 +60,8 @@ def add_user():
 @loginout_ctl.route("/get_user", methods=['POST'])
 def get_user():
     userid = request.json['userid']
-    ret, user = user_service.get_user(userid)
-    if ret == False:
+    user = user_service.get_user(userid)
+    if user == None:
         json_res = {'ok': False, 'error': 'user <%s> does not exist' % userid}
     else:
         json_res = {'ok': True, 'info': '<%s>' % str(user)}

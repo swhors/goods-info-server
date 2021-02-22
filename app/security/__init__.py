@@ -31,4 +31,4 @@ user_model = UserModel()
 
 @login_manager.user_loader
 def user_loader(user_id) -> User:
-    return user_model.find_user(user_id)
+    return user_model.get_user(user_id)

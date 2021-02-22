@@ -35,8 +35,8 @@ class UserService(SqLite):
         return wheres
 
 
-    def get_user(self, userid: str, get_val: bool = True) -> (bool, User):
-        print(f'find_user, user_id={userid}')
+    def get_user(self, userid: str, get_val: bool = True) -> User:
+        print(f'get_user, user_id={userid}')
 
         if get_val == True:
             conv_callback = UserService.row_2_user
@@ -52,14 +52,13 @@ class UserService(SqLite):
                 limit_num = 0,
                 conv_callback = conv_callback)
 
-        if cnt > 0:
-            if user != None and len(user) > 0:
-                print(f'get_user, user={user}')
-                return True, user[0]
-            else:
-                return True, None
+        print(f'get_user, cnt={cnt} / user={user}')
 
-        return False, None
+        if cnt > 0 or user != None:
+            print(f'get_user, user={user}')
+            return user[0]
+
+        return None
 
 
     def add_user(self,
@@ -67,32 +66,32 @@ class UserService(SqLite):
                  username: str,
                  email: str,
                  password: str) -> bool:
-        ret, user = self.get_user(userid, False)
+        user = self.get_user(userid, False)
 
-        print(f'add_user = {ret}, {user}')
+        print(f'add_user = {user}')
 
-        if ret == True:
+        if user == None or len(user) == 0:
+            allcolums = {
+                User._col_userid_:userid,
+                User._col_username_:username,
+                User._col_email_:email,
+                User._col_password_:password
+            }
+
+            super().insert(keyval=allcolums)
+
+            return True
+        else:
             return False
-
-        allcolums = {
-            User._col_userid_:userid,
-            User._col_username_:username,
-            User._col_email_:email,
-            User._col_password_:password
-        }
-
-        super().insert(keyval=allcolums)
-
-        return True
 
 
     def del_user(self, userid: str):
 
-        ret, user = self.get_user(userid, False)
+        user = self.get_user(userid, False)
 
-        print(f'del_user = {ret}, {user}')
+        print(f'del_user = {user}')
 
-        if ret == False:
+        if user == None or len(user) == False:
             return False
 
         super().delete(self.get_where_only_id(userid))
