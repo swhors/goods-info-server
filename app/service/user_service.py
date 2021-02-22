@@ -54,7 +54,7 @@ class UserService(SqLite):
 
         print(f'get_user, cnt={cnt} / user={user}')
 
-        if cnt > 0 or user != None:
+        if cnt > 0 and user != None:
             print(f'get_user, user={user}')
             return user[0]
 

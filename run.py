@@ -1,5 +1,6 @@
 from app import app
 import ssl
+from config import Config
 
 
 #main

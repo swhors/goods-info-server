@@ -12,6 +12,7 @@ class BlacklistTokenService(SqLite):
             __init__(BlacklistToken._table_name_,\
                      BlacklistToken.create_table())
 
+
     @classmethod
     def row_2_token(cls, items:[]) -> BlacklistToken:
         if len(items) == 3:
@@ -76,3 +77,22 @@ class BlacklistTokenService(SqLite):
             super().delete(wheres = wheres)
             return True
         return False
+
+
+def save_token(token):
+    blacklist_token = BlacklistToken(token=token)
+    try:
+        # insert the token
+        db.session.add(blacklist_token)
+        db.session.commit()
+        response_object = {
+            'status': 'success',
+            'message': 'Successfully logged out.'
+        }
+        return response_object, 200
+    except Exception as e:
+        response_object = {
+            'status': 'fail',
+            'message': e
+        }
+        return response_object, 200

@@ -11,13 +11,14 @@ from app.model.user import User
 from app.model.user import USERS
 
 from app.service.user_service import UserService
-from app.service.blacklisttoken_service import BlacklistTokenService
+from app.service.blacklisttoken_service import \
+    BlacklistTokenService as BLService
 from app.model.blacklisttoken import BlacklistToken
 from app.model.blacklisttoken_response import BlacklistTokenResponse
 
 
 user_service = UserService()
-blacklisttoken_service = BlacklistTokenService()
+bl_service = BLService()
 
 
 loginout_ctl=Blueprint('loginout_ctl', __name__, url_prefix='/auth')
@@ -80,20 +81,47 @@ def del_user():
     return jsonify(json_res)
 
 
+def refresh_jwt_token(user: User, user_passwd: str) -> str:
+    new_jwt_token = user.login(user_passwd)
+    if new_jwt_token != None:
+        login_user(user, remember=True)
+        json_res={'ok': True, \
+                  'msg': 'user <%s> refreshed' % user.userid,\
+                  'token': new_jwt_token}
+    else:
+        json_res = {'ok': False, 'error': 'Error : invalid password'}
+    return json_res
+
+
 @ssl_require
 @loginout_ctl.route('/login', methods=['POST'])
 def login():
     userid = request.json['userid']
-    passwd_hash = request.json['password']
-    if userid not in USERS:
-        json_res={'ok': False, 'error': 'Error : not found user'}
-    elif not USERS[userid].can_login(passwd_hash):
-        json_res = {'ok': False, 'error': 'Error : invalid password'}
-    else:
-        json_res={'ok': True, 'msg': 'user <%s> logined' % userid}
+    user_passwd = request.json['password']
 
-        USERS[userid].authenticated = True
-        login_user(USERS[userid], remember=True)
+    user = user_service.get_user(userid)
+    if user == None:
+        json_res={'ok': False, 'error': 'Error : not found user'}
+
+    if 'token' in request.json:
+        login_token = request.json['token']
+    else:
+        login_token = None
+
+    if 'refresh' in request.json:
+        refresh_token = request.json['token']
+    else:
+        refresh_token = False
+
+    if login_token == None or refresh_token == True:
+        json_res = refresh_jwt_token(user, user_passwd)
+    else:
+        if User.decode_auth_token(login_token.decode("utf-8")) == 1:
+            json_res={'ok': True, 'msg': 'user <%s> logined' % userid}
+            hser.authenticated = True
+        else:
+            json_res={'ok': False, 'msg': 'user <%s> invalid token' % userid}
+
     print(f'{json_res}')
     return jsonify(json_res)
 
@@ -114,7 +142,7 @@ def logout():
 @loginout_ctl.route("/add_blacklist", methods=['POST'])
 def add_token():
     token = request.json['token']
-    ret = blacklisttoken_service.add_blacklist(token)
+    ret = bl_service.add_blacklist(token)
     if ret == False:
         json_res = {'ok': False, 'error': 'token <%s> already exists' % token}
     else:
@@ -126,7 +154,7 @@ def add_token():
 @loginout_ctl.route("/is_blacklist", methods=['POST'])
 def is_balcklist():
     token = request.json['token']
-    ret = blacklisttoken_service.is_blacklist(token)
+    ret = bl_service.is_blacklist(token)
     if ret == False:
         json_res = {'ok': False, 'error': 'token <%s> does not exist' % token}
     else:
@@ -138,7 +166,7 @@ def is_balcklist():
 @loginout_ctl.route("/del_blacklist", methods=['POST'])
 def del_token():
     token = request.json['token']
-    ret = blacklisttoken_service.del_blacklist(token)
+    ret = bl_service.del_blacklist(token)
     if ret == False:
         json_res = {'ok': False, 'error': 'token <%s> does not exist' % token}
     else:
@@ -149,7 +177,7 @@ def del_token():
 @ssl_require
 @loginout_ctl.route("/get_all_blacklist", methods=['POST'])
 def get_all_blacklist():
-    ret, lists = blacklisttoken_service.get_all_blacklist()
+    ret, lists = bl_service.get_all_blacklist()
     if ret == False:
         return jsonify({'ok': False, 'error': 'does not have registered token'})
 

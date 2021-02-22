@@ -1,11 +1,10 @@
 import redis
 import sys
 
-from config import redis_conf as rcf
+from config import RedisConf as rcf
 
 
 class redis_con:
-
 
     def __init__(self):
         if rcf.use_auth == 1:

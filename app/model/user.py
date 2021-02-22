@@ -2,6 +2,7 @@ import flask_bcrypt
 import datetime
 import jwt
 from app.model.blacklisttoken import BlacklistToken
+from config import Config
 # from ..config import key
 
 
@@ -89,8 +90,7 @@ class User:
 
     @property
     def password(self):
-        raise AttributeError('password: write-only field')
-
+        return self._password_
 
     @password.setter
     def password(self, password):
@@ -129,30 +129,41 @@ class User:
         return flask_bcrypt.check_password_hash(self._password_, password)
 
 
-    def encode_auth_token(self, user_id):
+    def encode_auth_token(self, user_id = None) -> str:
         """
         Generates the Auth Token
         :return: string
         """
+
+        if user_id == None:
+            user_id = self._userid_
+
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1, seconds=5),
+                'exp': datetime.datetime.utcnow() + \
+                       datetime.timedelta(days=1, seconds=5),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
             return jwt.encode(
                 payload,
-                key,
+                Config.jwt_key,
                 algorithm='HS256'
             )
         except Exception as e:
             return e
 
 
+    def login(self, user_pwd: str) -> str:
+        if self.password == user_pwd:
+            return self.encode_auth_token()
+        return None
+
+
     @staticmethod
     def decode_auth_token(auth_token):
         try:
-            payload = jwt.decode(auth_token, key)
+            payload = jwt.decode(auth_token, Config.jwt_key)
             is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
             if is_blacklisted_token:
                 return 'Token blacklisted. Please log in again.'
