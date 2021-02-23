@@ -6,6 +6,7 @@ Flask-API
 flask-bcrypt
 flask-security-too
 flask-jwt
+flask-jwt-extended
 jwcrypto
 requests
 marshmallow
