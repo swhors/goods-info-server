@@ -1,5 +1,6 @@
 #login.def
-from flask import Blueprint, request, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import session, request
 from flask import current_app as app
 from flask import jsonify
 from flask_ssl import *

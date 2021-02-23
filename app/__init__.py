@@ -1,9 +1,9 @@
 # app/__init__.py
+import os
 
 from flask import Flask
 from flask_login import LoginManager
-import os
-
+from flask_jwt import JWT, jwt_required
 
 from app.model.user import User, USERS
 
@@ -32,3 +32,16 @@ from app.ctl.loginout_ctl import user_service
 def user_loader(user_id) -> User:
     ret, user = user_service.get_user(user_id)
     return user
+
+def authenticate(username, password):
+    ret, user = user_service.get_user(user_id)
+
+    if user and safe_str_cmp(user.password, password):
+        return user
+
+def identity(payload):
+    user_id = payload['identity']
+    ret, user = user_service.get_user(user_id)
+    return user
+
+jwt = JWT(app, authenticate, identity)

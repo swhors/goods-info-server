@@ -3,6 +3,7 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from flask import current_app as app
 from flask import jsonify
+from flask_jwt import JWT, jwt_required
 from flask_ssl import *
 from flask_login import current_user, login_required
 import json
@@ -80,8 +81,10 @@ def get_goods_with_id_internal(request):
 
 
 @goods_ctl.route('/get_goods_with_id', methods=['POST'])
+@jwt_required()
 def get_goods_with_id():
     return get_goods_with_id_internal(request)
+
 
 @goods_ctl.route('/get_goods_with_id_with_login', methods=['POST'])
 @login_required
@@ -90,7 +93,6 @@ def get_goods_with_id_with_login():
 
 
 @goods_ctl.route('/get_goods_with_id_with_token', methods=['POST'])
-@login_required
 def get_goods_with_id_with_token():
     return get_goods_with_id_internal(request)
 

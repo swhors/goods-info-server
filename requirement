@@ -4,6 +4,9 @@ flask-login
 Flask-RESTful
 Flask-API
 flask-bcrypt
+flask-security-too
+flask-jwt
+jwcrypto
 requests
 marshmallow
 panda
