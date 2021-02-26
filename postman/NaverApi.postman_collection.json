@@ -129,10 +129,16 @@
 			"name": "get_categories",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTQ0MTM1NTgsImlhdCI6MTYxNDMyNzE1Mywic3ViIjoic2ltcHNvbiJ9.FLJ2FX4aekFwN_xF1Z1H1-pvY7FMQWCRjoC7n2MC8IU",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "http://192.168.4.205:5000/category/get_categories",
-					"protocol": "http",
+					"raw": "https://192.168.4.205:5000/category/get_categories",
+					"protocol": "https",
 					"host": [
 						"192",
 						"168",
@@ -154,8 +160,8 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://192.168.4.205:5000/category/inc_category_count/taxi",
-					"protocol": "http",
+					"raw": "https://192.168.4.205:5000/category/inc_category_count/taxi",
+					"protocol": "https",
 					"host": [
 						"192",
 						"168",
@@ -178,8 +184,8 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://192.168.4.205:5000/category/del_category?title=food",
-					"protocol": "http",
+					"raw": "https://192.168.4.205:5000/category/del_category?title=food",
+					"protocol": "https",
 					"host": [
 						"192",
 						"168",
@@ -205,10 +211,16 @@
 			"name": "insert_item",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTQ0MTM1NTgsImlhdCI6MTYxNDMyNzE1Mywic3ViIjoic2ltcHNvbiJ9.FLJ2FX4aekFwN_xF1Z1H1-pvY7FMQWCRjoC7n2MC8IU",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"bus1\",\r\n    \"goods_id\":1,\r\n    \"goods_url\":\"https://naver.com/goods/1\",\r\n    \"image_url\":\"https://naver.com/goods/image/1.jpg\",\r\n    \"mall_name\":\"test mall\",\r\n    \"lprice\":100,\r\n    \"hprice\":200,\r\n    \"updated\":2020203131313\r\n}",
+					"raw": "{\r\n    \"name\":\"bus2\",\r\n    \"goods_id\":2,\r\n    \"goods_url\":\"https://naver.com/goods/2\",\r\n    \"image_url\":\"https://naver.com/goods/image/2.jpg\",\r\n    \"mall_name\":\"test mall\",\r\n    \"lprice\":110,\r\n    \"hprice\":210,\r\n    \"updated\":2020203131323\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -216,8 +228,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://192.168.4.205:5000/goods/add_goods",
-					"protocol": "http",
+					"raw": "https://192.168.4.205:5000/goods/add_goods",
+					"protocol": "https",
 					"host": [
 						"192",
 						"168",
@@ -234,10 +246,24 @@
 			"response": []
 		},
 		{
-			"name": "get_item",
+			"name": "get_item_with_login",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "1111",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "jwt eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTQ0MTM1NTgsImlhdCI6MTYxNDMyNzE1Mywic3ViIjoic2ltcHNvbiJ9.FLJ2FX4aekFwN_xF1Z1H1-pvY7FMQWCRjoC7n2MC8IU",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -248,8 +274,63 @@
 					}
 				},
 				"url": {
-					"raw": "http://192.168.4.205:5000/goods/get_goods_with_id?name=*&limit=15&id=-1",
-					"protocol": "http",
+					"raw": "https://192.168.4.205:5000/goods/get_goods_with_id_with_login?name=*&limit=15&id=-1",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"goods",
+						"get_goods_with_id_with_login"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "*"
+						},
+						{
+							"key": "limit",
+							"value": "15"
+						},
+						{
+							"key": "id",
+							"value": "-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_item_with_token",
+			"request": {
+				"auth": {
+					"type": "edgegrid"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTQ0MTM1NTgsImlhdCI6MTYxNDMyNzE1Mywic3ViIjoic2ltcHNvbiJ9.FLJ2FX4aekFwN_xF1Z1H1-pvY7FMQWCRjoC7n2MC8IU",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/goods/get_goods_with_id?name=*&limit=15&id=-1",
+					"protocol": "https",
 					"host": [
 						"192",
 						"168",
@@ -283,7 +364,13 @@
 			"name": "del_item",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTQ0MTMxNjcsImlhdCI6MTYxNDMyNjc2Miwic3ViIjoic2ltcHNvbiJ9.cQHTy-ON36NM5G0-NiaoOlaT21ce4RcKJYhE1MGVHuI",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -294,8 +381,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://192.168.4.205:5000/goods/del_goods_with_id?name=*&id=-1&mall_name=*",
-					"protocol": "http",
+					"raw": "https://192.168.4.205:5000/goods/del_goods_with_id?name=*&id=-1&mall_name=*",
+					"protocol": "https",
 					"host": [
 						"192",
 						"168",
@@ -320,6 +407,390 @@
 							"key": "mall_name",
 							"value": "*"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\": \"simpson\",\r\n    \"password\": \"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/login",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login with token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\": \"simpson\",\r\n    \"password\": \"12345678\",\r\n    \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTQwNzExMzcsImlhdCI6MTYxMzk4NDczMiwic3ViIjoic2ltcHNvbiJ9.yC1qchg1Dxj2TkqH5BRoshLE6eSUICWWcxM_A_iFEsc\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/login",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": \"simpson\",\r\n    \"passwd_hash\": \"12345678\",\r\n    \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTQwNzEyMDYsImlhdCI6MTYxMzk4NDgwMSwic3ViIjoic2ltcHNvbiJ9.VeHDzIsJkZKwHCUPBUxGUUhy4NmvFF9ggMBD1nzJ08E\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/logout",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\": \"simpson\",\r\n    \"password\": \"12345678\",\r\n    \"email\": \"swhors@naver.com\",\r\n    \"username\": \"simpson\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/add_user",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"add_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add_blacklist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\": \"090909123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/add_blacklist",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"add_blacklist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "is_blacklist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\": \"090909123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/is_blacklist",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"is_blacklist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_all_blacklist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/get_all_blacklist",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"get_all_blacklist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\": \"simpson\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/get_user",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"get_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "del_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\": \"simpson\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/del_user",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"del_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "del_blacklistedtoken",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\": \"090909123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/del_blacklist",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"del_blacklist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "no-auth",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/notauth_func",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"notauth_func"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": \"simpson\",\r\n    \"passwd_hash\": \"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://192.168.4.205:5000/auth/auth_func",
+					"protocol": "https",
+					"host": [
+						"192",
+						"168",
+						"4",
+						"205"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"auth_func"
 					]
 				}
 			},
