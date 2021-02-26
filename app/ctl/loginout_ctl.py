@@ -92,7 +92,8 @@ def create_jwt_token(user: User, user_passwd: str) -> str:
         login_user(user, remember=True)
         json_res={'ok': True, \
                   'msg': 'user <%s> refreshed' % user.userid,\
-                  'token': new_jwt_token.decode('utf-8')}
+                  'token': new_jwt_token}
+                  # 'token': new_jwt_token.decode('utf-8')}
     else:
         json_res = {'ok': False, 'error': 'Error : invalid password'}
     return json_res

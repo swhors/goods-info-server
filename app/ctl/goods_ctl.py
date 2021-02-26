@@ -6,19 +6,21 @@ from flask import jsonify
 from flask_jwt import JWT, jwt_required
 from flask_ssl import *
 from flask_login import current_user, login_required
+from flask_jwt_extended import jwt_required
+
 import json
 
 from app.model.goods import Goods
 from app.model.goods_response import GoodsResponse
 from app.service.goods_service import GoodsService
 
-goods_model = GoodsService()
+goods_service = GoodsService()
 
 goods_ctl=Blueprint('goods_ctl', __name__, url_prefix='/goods')
 
 
 @goods_ctl.route('/add_goods', methods=['POST'])
-@login_required
+@jwt_required()
 def add_goods_with_id():
     params = request.get_json(force=True)
     if params != None:
@@ -30,7 +32,7 @@ def add_goods_with_id():
         lprice = params[Goods._col_lprice_]
         hprice = params[Goods._col_hprice_]
         updated = params[Goods._col_updated_]
-        goods_model.insert_goods(
+        goods_service.insert_goods(
             name = goods_name,
             goods_id = goods_id,
             goods_url = goods_url,
@@ -62,11 +64,11 @@ def get_goods_with_id_internal(request):
         sel_limit = 20
 
     if name == '*':
-        cnt, goods_list = goods_model.get_goods(name = None,
+        cnt, goods_list = goods_service.get_goods(name = None,
                                                 goods_id = -1,
                                                 sel_limit = sel_limit)
     else:
-        cnt, goods_list = goods_model.get_goods(name = name,
+        cnt, goods_list = goods_service.get_goods(name = name,
                                                 goods_id = goods_id,
                                                 sel_limit = sel_limit)
     print(f'result={cnt}, \n       {goods_list}')
@@ -80,26 +82,7 @@ def get_goods_with_id_internal(request):
     return jsonify({"len":cnt, "goods":goods_json_list})
 
 
-@goods_ctl.route('/get_goods_with_id', methods=['POST'])
-@jwt_required()
-def get_goods_with_id():
-    return get_goods_with_id_internal(request)
-
-
-@goods_ctl.route('/get_goods_with_id_with_login', methods=['POST'])
-@login_required
-def get_goods_with_id_with_login():
-    return get_goods_with_id_internal(request)
-
-
-@goods_ctl.route('/get_goods_with_id_with_token', methods=['POST'])
-def get_goods_with_id_with_token():
-    return get_goods_with_id_internal(request)
-
-
-@goods_ctl.route('/del_goods_with_id_with_login', methods=['POST'])
-@login_required
-def del_goods_with_id_with_login():
+def del_goods_with_id_internal(request):
 
     params = request.args.to_dict()
 
@@ -119,12 +102,36 @@ def del_goods_with_id_with_login():
         goods_id = -1
 
     if name == '*':
-        goods_model.delete_goods(name = None,
+        goods_service.delete_goods(name = None,
                                  goods_id = -1,
                                  mall_name = None)
     else:
-        goods_model.delete_goods(name = name,
+        goods_service.delete_goods(name = name,
                                  goods_id = goods_id,
                                  mall_name = mall_name)
 
     return jsonify({"result":"ok"})
+
+
+@goods_ctl.route('/get_goods_with_id', methods=['POST'])
+@jwt_required()
+def get_goods_with_id():
+    return get_goods_with_id_internal(request)
+
+
+@goods_ctl.route('/get_goods_with_id_with_login', methods=['POST'])
+@login_required
+def get_goods_with_id_with_login():
+    return get_goods_with_id_internal(request)
+
+
+@goods_ctl.route('/del_goods_with_id', methods=['POST'])
+@jwt_required()
+def del_goods_with_id():
+    return del_goods_with_id_internal(request)
+
+
+@goods_ctl.route('/del_goods_with_id_with_login', methods=['POST'])
+@login_required
+def del_goods_with_id_with_login():
+    return del_goods_with_id_internal(request)
